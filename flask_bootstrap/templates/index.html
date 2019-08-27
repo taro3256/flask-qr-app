@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block headline %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<p id="msg">{{message}}</p>
+<div class="modal fade" id="dlog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    ※注目！
+                </h3>
+            </div>
+            <div class="modal-body">
+                <h6>これは、モーダルダイアログです</h6>
+                <div>
+                    <input type="text" id="txt" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="doAction();">OK</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#dlog">Modal Dialog!</button>
+
+<script>
+    function doAction() {
+        var val = $('#txt').val()
+        $('#msg').text('「' + val + '」と入力しました。')
+    }
+</script>
+
+<hr>
+
+<div class="card" style="width: 18em;">
+    <div class="card-body">
+        バジェットガエルカード
+    </div>
+    <img src="/static/image.jpg" alt="card-img">
+    <div class="card-body">
+        <p class="card-text">
+            これは、カードレイアウトのサンプル
+            ここにコンテンツの本文記述
+        </p>
+    </div>
+</div>
+
+<hr>
+
+<div class="jumbotron">
+    <h1 class="display-1">jumbotron</h1>
+    <p class="lead">This is sample jumbotron</p>
+    <hr>
+    <p>
+        これはジャンボトロンのサンプル
+        大きくて目立つコンテンツを表示するもの
+    </p>
+</div>
+
+<hr>
+
+<p>リスト</p>
+<ul class="list-group">
+    <li class="list-group-item active">Windows</li>
+    <li class="list-group-item">macOS</li>
+    <li class="list-group-item" disabled>Linux</li>
+    <li class="list-group-item">Chrome OS</li>
+</ul>
+
+<hr>
+
+<p>アンカー</p>
+<ul class="list-group">
+    <a class="list-group-item list-group-item-action" href="#">Windows</a>
+    <a class="list-group-item list-group-item-action" href="#">macOS</a>
+    <a class="list-group-item list-group-item-action" href="#">Linux</a>
+    <a class="list-group-item list-group-item-action" href="#">Chrome OS</a>
+</ul>
+
+<hr>
+
+<p>コラプス</p>
+<a href="#collapse" class="m-2 btn btn-primary" data-toggle="collapse" role="button">
+    コラプスをON/OFFする
+</a>
+<div class="m-2 collapse" id="collapse">
+    <div class="alert alert-primary">
+        これはコラプスで表示されるコンテンツです<br>
+        このように簡単にON/OFFできます
+    </div>
+</div>
+
+<hr>
+
+{% endblock %}
+
+
+{% block footer %}
+copyright
+{% endblock %}
