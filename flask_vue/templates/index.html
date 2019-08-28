@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Index
+{% endblock %}
+
+{% block headline %}
+{{title}}
+{% endblock %}
+
+{% block content %}
+<p id="msg">{{message}}</p>
+<div id="app" class="m-3">
+    {% raw %}
+    <mycomp />
+    {% endraw %}
+</div>
+{% raw %}
+<script type="text/x-template" id="mycomp-template">
+    <div>
+        <div class="alert alert-info">
+            <h5>{{title}}</h5>
+            <p>{{data}}</p>
+        </div>
+        <div>
+            <select class="form-control" v-model="num" v-on:change="action">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+            </select>
+        </div>
+    </div>
+</script>
+{% endraw %}
+<script>
+    Vue.component('mycomp', {
+        template: '#mycomp-template',
+        data: function () {
+            return {
+                title: 'Ajax data',
+                data: 'wait...',
+                num: 0,
+            }
+        },
+        methods: {
+            action: function(e) {
+                let self = this;
+                $.get("/ajax/" + this.num, function(data) {
+                    self.data = data.id + ':' + data.name + '[' + data.mail + ']'
+                })
+            }
+        }
+    })
+    new Vue({
+        el: '#app',
+    })
+</script>
+{% endblock %}
+
+
+{% block footer %}
+copyright
+{% endblock %}
