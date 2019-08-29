@@ -1,13 +1,15 @@
-import pickle
+from flask import Flask, render_template, request, session, \
+    redirect, jsonify, current_app, g
+
 import sqlite3
 import json
-from flask import Flask, render_template, request, session, redirect, jsonify, current_app
-from flask.views import MethodView
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, create_engine, Text, DateTime, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, \
+    Text, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm.exc import NoResultFound
 
 import qrcode as qr
 from PIL import Image
@@ -15,14 +17,13 @@ import base64
 from io import BytesIO
 
 app = Flask(__name__)
-app.select_key = b'random string...'
+app.secret_key = b'random string...'
 
 engine = create_engine('sqlite:///db.sqlite3')
 
 # get QRCode data.
 def get_qrdata(s):
     qr_img = qr.make(s)
-
 
     byte_buf = BytesIO()
     qr_img.save(byte_buf, format="png")
@@ -34,8 +35,8 @@ def get_qrdata(s):
 # base model
 Base = declarative_base()
 
-
 # model class
+
 class User(Base):
     __tablename__ = 'users'
  
@@ -43,14 +44,12 @@ class User(Base):
     name = Column(String(255))
     password = Column(String(255))
 
-
     def to_dict(self):
         return {
             'id':int(self.id), 
             'name':str(self.name), 
             'password':str(self.password)
         }
-
 
 class Message(Base):
     __tablename__ = 'messages'
@@ -60,9 +59,7 @@ class Message(Base):
     message = Column(String(255))
     created = Column(DateTime())
 
-
-    user = relationship('User') 
-
+    user = relationship("User") 
 
     def to_dict(self):
         return {
@@ -73,7 +70,6 @@ class Message(Base):
             'user':str(self.user.name)
         }
 
-
 # get Model-list Dictionary
 def get_by_list(arr):
     res = []
@@ -81,16 +77,21 @@ def get_by_list(arr):
         res.append(item.to_dict())
     return res
 
+@app.route('/bk/', methods=['GET'])
+def index():
+    return render_template('index.html', \
+        title='Index', \
+        message='Hello! This is Bootstrap sample.', )
+
 
 # access top page.
 @app.route('/', methods=['GET'])
-def index():
+def index_bk():
     return render_template('messages.html', \
         login=False, \
         title='Messages', \
         message='not logined...', 
         data=[] )
-
 
 # post message.
 @app.route('/post', methods=['POST'])
@@ -106,7 +107,6 @@ def post_msg():
     ses.close()
     return 'True'
 
-
 # get messages.
 @app.route('/messages', methods=['POST'])
 def get_msg():
@@ -115,7 +115,6 @@ def get_msg():
     re = ses.query(Message).join(User).order_by(Message.created.desc())[:10]
     msgs = get_by_list(re)
     return jsonify(msgs)
-
 
 # get QRCode Data
 @app.route('/qr', methods=['POST'])
@@ -128,13 +127,11 @@ def get_qr():
     dic['qr'] = get_qrdata(re.message)
     return jsonify(dic)
 
-
 # login form sended.
 @app.route('/login', methods=['POST'])
 def login_post():
     name = request.form.get('name')
     pswd = request.form.get('password')
-
 
     Session = sessionmaker(bind=engine)
     ses = Session()
@@ -153,5 +150,8 @@ def login_post():
     ses.close()
     return flg
 
+
+# main thread ====================================================
 if __name__ == '__main__':
+    app.debug = True
     app.run(host='localhost')
